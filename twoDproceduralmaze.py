@@ -91,5 +91,5 @@ class maze_generator:
         if self.plotobj is not None:
             xy, yz = self.maze_view(self.maze)
             if xy:
-                self.plotobj(xy[0], xy[1], False, color='w', marker='s')
+                self.plotobj.maze_create(xy[0], xy[1], color='w', marker='s')
         return xy

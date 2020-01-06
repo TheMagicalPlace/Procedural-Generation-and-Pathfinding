@@ -85,16 +85,14 @@ class Pathfinder:
                 path = []
                 current = current_node
 
-
-                # going back through parents to find path
+                #self.plotobj.show_solution([], [], color='b', marker='*')
+                # going back through parents to findpath
                 while current is not None:
                     path.append(current.position)
                     current = current.parent
                     p2 = list(zip(*path))
-                    if len(path) <=1:
-                        self.plotobj(xy[0], xy[1], True, color='aqua',marker='*')
-                    else:
-                        self.plotobj(p2[0],p2[1],False,color='b')
+
+                    self.plotobj.show_solution(p2[0], p2[1], color='aqua', marker='*')
                 return path[::-1]  # Return reversed path
 
             # only cardinal movments allowed here, i.e. no up, down, left, right

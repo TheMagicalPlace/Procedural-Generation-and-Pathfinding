@@ -26,7 +26,7 @@ class liveplot:
                 self.actpos[(i,j)] = len(x)-1
         cx = list(zip(*x))
         self.sc = self.ax.scatter(x=cx[0],y=cx[1],marker='s',c=self.c) # TODO give functionality to more than just scatter plots
-        self.plt.draw()
+
 
 
 
@@ -40,11 +40,15 @@ class liveplot:
         else:
             plt.ylim(y_axis[0],y_axis[1]+1)
 
-    def animate_scatter(self,frames,color='g',marker='s'):
-        if len(frames) == 2: frames = [frames]
+    def animate_scatter(self,frames,color='g',marker='s',alt=False):
+
         t = []
+        if not alt:
+            self.sc.set_offsets(np.c_[frames[0], frames[1]])
+            self.plt.pause(0.005)
+            return
 
-
+        if len(frames) == 2: frames = [frames]
         for a,b in frames:
             for aa,bb in zip(a,b):
                 pos = self.actpos[(aa,bb)]
@@ -53,16 +57,27 @@ class liveplot:
                 t.append(pos)
                 #self.ax.collections[0].cmap.colors[pos] = e
 
-        self.fig.canvas.draw_idle()
 
         self.sc.set_color(self.c)
+        self.plt.pause(0.005)
         #self.sc.set_offsets(np.c_[frames[0], frames[1]])
         #
-        self.plt.pause(0.05)
 
 
 
+    def maze_create(self,xdata,ydata,color='white',marker='s'):
+        self.possible_moves = [xdata,ydata]
+        self.animate_scatter(self.possible_moves,color,marker,True)
+        _ = []
 
+
+        #self.sc = self.ax.scatter(x=xdata,y=ydata,color=self.c,marker='*')
+        self.sc = self.ax.scatter(x=[],y=[],marker='.',c='blue')
+
+    def show_solution(self,x,y,color,marker):
+        self.ax.scatter(x=x,y=y,marker='s',c='white')
+        self.ax.scatter(x=x, y=y, marker='*', c='yellow')
+        plt.pause(0.005)
 
 
 
@@ -70,4 +85,4 @@ class liveplot:
 
 
         self.frmdata = [xdata, ydata]
-        self.animate_scatter(self.frmdata,color,marker)
+        self.animate_scatter(self.frmdata,color,marker,newplot)
