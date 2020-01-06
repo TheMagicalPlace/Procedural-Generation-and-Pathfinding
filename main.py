@@ -7,7 +7,7 @@ from AstarPathfinding import *
 
 
 if __name__ == '__main__':
-    x, y = 21, 21 # grid size
+    x, y = 51, 51 # grid size
     plot_obj = liveplot(x, y) # init live plot
 
     mgen = maze_generator(x, y, plot_obj) # create a new maze

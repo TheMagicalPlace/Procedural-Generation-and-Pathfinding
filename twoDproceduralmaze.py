@@ -49,10 +49,7 @@ class maze_generator:
         flag = True
         fla2g = False
         while len(self.stack) > 0:
-            if self.plotobj is not None:
-                xy,yz = self.maze_view(self.maze)
-                if xy:
-                    self.plotobj(xy[0],xy[1],False,color='w',marker='s')
+
 
 
             (cx, cy) = self.stack[-1]
@@ -90,5 +87,9 @@ class maze_generator:
                             f = False
                             break
         xy,yz = self.maze_view(self.maze)
-        self.plotobj(xy[0], xy[1], False)
+        #self.plotobj(xy[0], xy[1], False)
+        if self.plotobj is not None:
+            xy, yz = self.maze_view(self.maze)
+            if xy:
+                self.plotobj(xy[0], xy[1], False, color='w', marker='s')
         return xy

@@ -29,6 +29,7 @@ class liveplot:
         self.plt.draw()
 
 
+
         # Setting plot axis boundaries
         if isinstance(x_axis,int):
             plt.xlim(-1,x_axis+1)
@@ -41,14 +42,24 @@ class liveplot:
 
     def animate_scatter(self,frames,color='g',marker='s'):
         if len(frames) == 2: frames = [frames]
+        t = []
+
+
         for a,b in frames:
             for aa,bb in zip(a,b):
                 pos = self.actpos[(aa,bb)]
-                self.c[pos] = colors.to_rgb(color)
-        self.sc.set_facecolor(self.c)
+                e = colors.to_rgb(color)
+                self.c[pos] = e
+                t.append(pos)
+                #self.ax.collections[0].cmap.colors[pos] = e
+
+        self.fig.canvas.draw_idle()
+
+        self.sc.set_color(self.c)
         #self.sc.set_offsets(np.c_[frames[0], frames[1]])
-        self.plt.pause(0.00000000005)
-        #self.fig.canvas.draw_idle()
+        #
+        self.plt.pause(0.05)
+
 
 
 
@@ -56,5 +67,7 @@ class liveplot:
 
 
     def __call__(self,xdata,ydata,newplot=None,color='w',marker=None):
+
+
         self.frmdata = [xdata, ydata]
         self.animate_scatter(self.frmdata,color,marker)
