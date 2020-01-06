@@ -1,21 +1,34 @@
 
 
 
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt,colors
 import matplotlib.animation
 import numpy as np
 import copy
 
-
+from itertools import cycle
 class liveplot:
     ''' animated plot generation for 2-dimensional plots'''
     def __init__(self,x_axis,y_axis,x=[],y=[]):
         self.plt = plt
         self.plt.ion()
+        self.scatters = []
         self.fig, self.ax = plt.subplots()
-        x, y  = [1],[1]
-        self.sc = self.ax.scatter(x, y,marker='D',c='black') # TODO give functionality to more than just scatter plots
+        self.actpos = {}
+        x = []
+        y =  []
+        self.c = []
+        o = cycle(['black','white','yellow'])
+        for i,_x in enumerate(range(x_axis)):
+            for j,_y in enumerate(range(y_axis)):
+                x.append([i,j])
+                self.c.append([0,0,0])
+                self.actpos[(i,j)] = len(x)-1
+        cx = list(zip(*x))
+        self.sc = self.ax.scatter(x=cx[0],y=cx[1],marker='s',c=self.c) # TODO give functionality to more than just scatter plots
         self.plt.draw()
+
+
         # Setting plot axis boundaries
         if isinstance(x_axis,int):
             plt.xlim(-1,x_axis+1)
@@ -26,20 +39,22 @@ class liveplot:
         else:
             plt.ylim(y_axis[0],y_axis[1]+1)
 
-    def animate_scatter(self,frames,color='g'):
+    def animate_scatter(self,frames,color='g',marker='s'):
+        if len(frames) == 2: frames = [frames]
+        for a,b in frames:
+            for aa,bb in zip(a,b):
+                pos = self.actpos[(aa,bb)]
+                self.c[pos] = colors.to_rgb(color)
+        self.sc.set_facecolor(self.c)
+        #self.sc.set_offsets(np.c_[frames[0], frames[1]])
+        self.plt.pause(0.00000000005)
+        #self.fig.canvas.draw_idle()
 
-        self.sc.set_offsets(np.c_[frames[0], frames[1]])
-        self.fig.canvas.draw_idle()
-        self.plt.pause(0.005)
+
 
 
 
 
     def __call__(self,xdata,ydata,newplot=None,color='w',marker=None):
         self.frmdata = [xdata, ydata]
-        if newplot:
-            self.animate_scatter(self.frmdata,'g')
-            self.sc = self.ax.scatter(self.frmdata[0], self.frmdata[1], marker=marker, c=color)
-        else:
-            self.animate_scatter(self.frmdata,'y')
-            #self.sc = self.ax.scatter(self.frmdata[0], self.frmdata[1], marker='X', c=color)
+        self.animate_scatter(self.frmdata,color,marker)
