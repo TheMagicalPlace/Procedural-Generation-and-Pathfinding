@@ -66,9 +66,9 @@ class Pathfinder:
             # updates the live plot
             if self.plotobj is not None:
                 if closed_list:
-                    xy = list(zip(*set([n.position for n in closed_list])))
-                    if xy:
-                        self.plotobj.show_path(xy[0],xy[1])
+                    #xy = list(zip(*set([n.position for n in closed_list])))
+                    if True:
+                        self.plotobj.show_path([current_node.position[0]],[current_node.position[1]])
 
                 else:
                     # setting initial node values
@@ -84,6 +84,7 @@ class Pathfinder:
 
             # checking if the target node has been found
             if current_node == self.enode:
+                print('FOUND END')
                 path = []
                 current = current_node
 
@@ -94,7 +95,7 @@ class Pathfinder:
                     current = current.parent
                     p2 = list(zip(*path))
 
-                    self.plotobj.show_path(p2[0], p2[1])
+                    self.plotobj.show_path([current.position[0]], [current.position[1]],color='yellow')
                 return path[::-1]  # Return reversed path
 
             # only cardinal movments allowed here, i.e. no up, down, left, right
@@ -123,10 +124,10 @@ class Pathfinder:
 
                 # Child is on the closed list, skip
                 for seem_child in chain(closed_list,open_list):
-                    print(child.position,seem_child.position)
+                    #print(child.position,seem_child.position)
                     if child == seem_child:
 
-                        print('Broke')
+                        #print('Broke')
                         break
                 # assigning a value to the node
                 else:
