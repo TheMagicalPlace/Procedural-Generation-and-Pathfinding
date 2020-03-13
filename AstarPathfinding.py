@@ -8,7 +8,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import random,copy,time
-
+from itertools import chain
 from AnimatedPlotMods import liveplot
 
 
@@ -17,7 +17,7 @@ class Node():
 
     def __init__(self, parent=None, position=None):
         self.parent = parent
-        self.position = position # x-y position on the grid
+        self.position = tuple(position) # x-y position on the grid
 
 
         # values for heuristic function
@@ -25,8 +25,10 @@ class Node():
         self.h = 0
         self.f = 0
 
+    def __hash__(self):
+        return hash(self.position)
     def __eq__(self, other):
-        return self.position == other.position
+        return hash(self) == hash(other)
 
 class Pathfinder:
 
@@ -64,9 +66,9 @@ class Pathfinder:
             # updates the live plot
             if self.plotobj is not None:
                 if closed_list:
-                    xy = list(zip(*[n.position for n in closed_list]))
+                    xy = list(zip(*set([n.position for n in closed_list])))
                     if xy:
-                        self.plotobj(xy[0],xy[1],False,color='y',marker='x')
+                        self.plotobj.show_path(xy[0],xy[1])
 
                 else:
                     # setting initial node values
@@ -92,12 +94,11 @@ class Pathfinder:
                     current = current.parent
                     p2 = list(zip(*path))
 
-                    self.plotobj.show_solution(p2[0], p2[1], color='aqua', marker='*')
+                    self.plotobj.show_path(p2[0], p2[1])
                 return path[::-1]  # Return reversed path
 
             # only cardinal movments allowed here, i.e. no up, down, left, right
             possible_moves = [(0, -1), (0, 1), (-1, 0), (1, 0)] #(-1, -1), (-1, 1), (1, -1), (1, 1)]
-
             children = []
 
             # checking possible child nodes
@@ -121,9 +122,12 @@ class Pathfinder:
             for child in children:
 
                 # Child is on the closed list, skip
-                for closed_child in closed_list:
-                    if child.position == closed_child.position:
-                        continue
+                for seem_child in chain(closed_list,open_list):
+                    print(child.position,seem_child.position)
+                    if child == seem_child:
+
+                        print('Broke')
+                        break
                 # assigning a value to the node
                 else:
                     child.g = current_node.g+1 # distance from origin in moves (i.e. no. of nodes between origin and node)
@@ -131,19 +135,16 @@ class Pathfinder:
 
                     # heuristic value, weighed slightly over distance from parent to help avoid the search getting 'stuck'
                     # in cases where the next best node is the parent node and the child node is the best node.
-                    child.h = self.value_heuristic(child,self.enode)*1.001 # heuristic value
+                    child.h = self.value_heuristic(child,self.enode)*1 # heuristic value
                     child.f = child.g+child.h
 
-                # in cases where the two 'best' nodes are are the current child node and its parent
-                # (i.e. a dead end in the maze close to the exit), the algorithm is likely stalling at a dead end,
-                # so in order to allow it to continue the child node is not added to the open list.
-                if current_node.parent is not None and child == current_node.parent:
-                    continue
-                for open_node in open_list:
-                    # don't add nodes that are already on the open list
-                    if child == open_node or child.g > open_node.g:
+                    # in cases where the two 'best' nodes are are the current child node and its parent
+                    # (i.e. a dead end in the maze close to the exit), the algorithm is likely stalling at a dead end,
+                    # so in order to allow it to continue the child node is not added to the open list.
+                    if current_node.parent is not None and child == current_node.parent:
+                        closed_list.append(child)
                         continue
-                open_list.append(child)
+                    open_list.append(child)
 
 
 

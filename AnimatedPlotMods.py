@@ -46,6 +46,9 @@ class liveplot:
         if not alt:
             self.sc.set_offsets(np.c_[frames[0], frames[1]])
             self.plt.pause(0.005)
+
+            e = self.ax.collections
+            print(e)
             return
 
         if len(frames) == 2: frames = [frames]
@@ -57,6 +60,8 @@ class liveplot:
                 t.append(pos)
                 #self.ax.collections[0].cmap.colors[pos] = e
 
+        e = self.ax.collections
+        print(e)
 
         self.sc.set_color(self.c)
         self.plt.pause(0.005)

@@ -11,23 +11,19 @@ import random,copy
 class maze_generator:
 
 
-    def __init__(self,xlen,ylen,plot_obj=None):
-        if plot_obj is not None:
-            self.plotobj = plot_obj
-        else:
-            self.plotobj = None
+    def __init__(self,xlen,ylen):
         self.mx = xlen
         self.my = ylen  # width and height of the maze
-        self.maze = [[0 for x in range(self.mx)] for y in range(self.my)]
+        self.maze = [[0 for x in range(self.mx+1)] for y in range(self.my+1)]
         self.dx = [0, 1, 0, -1];
         self.dy = [-1, 0, 1, 0]  # 4 directions to move in the maze
-        self.stack = [(len(self.maze)-2, len(self.maze[1])-1)]
-        self.start = copy.copy(self.stack[0])
+        self.stack = [(xlen-1,ylen-1)]
+        self.start = copy.copy([1,1])
         color = [(0, 0, 0), (255, 255, 255)]  # RGB colors of the maze
 
     def __call__(self, *args, **kwargs):
-        self.maze_generator()
-        return self.maze,self.end,self.start
+        x,y = self.maze_generator()
+        return self.maze,x,y,self.end,self.start
 
     def maze_view(self,maze):
         xy = []
@@ -58,7 +54,7 @@ class maze_generator:
             nlst = [] # list of available neighbors
             for i in range(4):
                 nx = cx + self.dx[i]; ny = cy + self.dy[i]
-                if nx >= 1 and nx < self.mx-1 and ny >= 1 and ny < self.my-1:
+                if nx >= 1 and nx < self.mx-1 and ny >= 0 and ny < self.my:
 
                     if self.maze[ny][nx] == 0:
                         # of occupied neighbors must be 1
@@ -87,9 +83,4 @@ class maze_generator:
                             f = False
                             break
         xy,yz = self.maze_view(self.maze)
-        #self.plotobj(xy[0], xy[1], False)
-        if self.plotobj is not None:
-            xy, yz = self.maze_view(self.maze)
-            if xy:
-                self.plotobj.maze_create(xy[0], xy[1], color='w', marker='s')
-        return xy
+        return xy[0],xy[1]
